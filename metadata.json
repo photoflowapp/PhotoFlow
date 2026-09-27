@@ -1,0 +1,6 @@
+{
+  "name": "PhotoFlow",
+  "description": "End-to-end encrypted photography studio management platform powered by Supabase Authentication, private Supabase Storage, and client-side Web Crypto AES-GCM encryption.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
