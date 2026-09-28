@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { X, Loader2, Settings as SettingsIcon } from 'lucide-react';
+import { X, Loader2, Settings as SettingsIcon, ArrowUpRight } from 'lucide-react';
 import { CurrencyCode } from '../types';
 import { usePhotoFlowStore } from '../stores/usePhotoFlowStore';
+import { openStripeBillingPortal } from '../lib/stripe/stripeService';
 import { SUPPORTED_CURRENCIES } from '../utils/format';
 import { CustomSelect } from './ui/CustomSelect';
 
 export const SettingsModal: React.FC = () => {
   const isOpen = usePhotoFlowStore((s) => s.isSettingsOpen);
   const setSettingsOpen = usePhotoFlowStore((s) => s.setSettingsOpen);
+  const user = usePhotoFlowStore((s) => s.user);
+  const subscriptionRecord = usePhotoFlowStore((s) => s.subscriptionRecord);
+  const addToast = usePhotoFlowStore((s) => s.addToast);
   const settings = usePhotoFlowStore((s) => s.settings);
   const updateSettings = usePhotoFlowStore((s) => s.updateSettings);
   const clearAllApplicationData = usePhotoFlowStore((s) => s.clearAllApplicationData);
@@ -20,6 +24,7 @@ export const SettingsModal: React.FC = () => {
   const [showWipeConfirm, setShowWipeConfirm] = useState(false);
   const [wipeConfirmText, setWipeConfirmText] = useState('');
   const [wiping, setWiping] = useState(false);
+  const [openingPortal, setOpeningPortal] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -127,6 +132,47 @@ export const SettingsModal: React.FC = () => {
               Auto-generate tasks for new projects
             </span>
           </label>
+
+          {/* Stripe Subscription Management */}
+          <div className="pt-3.5 border-t border-neutral-100 flex items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-medium text-black">Subscription</p>
+              <p className="text-[11px] text-neutral-500">
+                Active · Stripe
+                {subscriptionRecord?.currentPeriodEnd
+                  ? ` · Renews ${new Date(subscriptionRecord.currentPeriodEnd).toLocaleDateString()}`
+                  : ''}
+              </p>
+            </div>
+            {subscriptionRecord?.customerId && (
+              <button
+                type="button"
+                disabled={openingPortal}
+                onClick={async () => {
+                  if (!user) return;
+                  setOpeningPortal(true);
+                  try {
+                    await openStripeBillingPortal(user, subscriptionRecord);
+                  } catch (err) {
+                    addToast(
+                      'Could not open Stripe portal',
+                      err instanceof Error ? err.message : undefined,
+                      'error'
+                    );
+                    setOpeningPortal(false);
+                  }
+                }}
+                className="h-8 px-3 rounded-md border border-neutral-200 hover:border-black text-xs font-medium text-black inline-flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                {openingPortal ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                )}
+                <span>Manage on Stripe</span>
+              </button>
+            )}
+          </div>
 
           {/* Clear Workspace Data */}
           <div className="pt-3.5 border-t border-neutral-100 space-y-3">

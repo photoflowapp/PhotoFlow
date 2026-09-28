@@ -17,6 +17,7 @@ import { AppPage } from '../types';
 import { usePhotoFlowStore } from '../stores/usePhotoFlowStore';
 import { SyncStatusBadge } from '../components/SyncStatusBadge';
 import { PWAInstallButton } from '../components/PWAInstallButton';
+import { PhotoFlowLogo } from '../components/PhotoFlowLogo';
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -51,7 +52,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
     <div className="min-h-screen bg-white text-black flex flex-col md:flex-row">
       {/* Desktop Sidebar — clean navigation */}
       <aside className="hidden md:flex md:w-52 md:flex-col md:fixed md:inset-y-0 bg-[#fafafa] border-r border-neutral-200 select-none z-30">
-        <div className="h-14 px-5 flex items-center">
+        <div className="h-14 px-5 flex items-center gap-2.5">
+          <PhotoFlowLogo className="w-5 h-5 text-black shrink-0" />
           <span className="text-sm font-semibold tracking-tight text-black truncate">
             {settings.studioName || 'PhotoFlow'}
           </span>
@@ -90,9 +92,12 @@ export const AppShell: React.FC<AppShellProps> = ({ children }) => {
         <header className="sticky top-0 z-20 h-13 bg-white/95 backdrop-blur-sm border-b border-neutral-100 px-4 md:px-8 flex items-center justify-between gap-3">
           {/* Left: Name + Search */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <span className="md:hidden text-sm font-semibold text-black truncate">
-              {settings.studioName || 'PhotoFlow'}
-            </span>
+            <div className="md:hidden flex items-center gap-2 min-w-0">
+              <PhotoFlowLogo className="w-4 h-4 text-black shrink-0" />
+              <span className="text-sm font-semibold text-black truncate">
+                {settings.studioName || 'PhotoFlow'}
+              </span>
+            </div>
 
             <button
               type="button"

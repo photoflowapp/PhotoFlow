@@ -4,6 +4,7 @@ import { CurrencyCode } from '../types';
 import { usePhotoFlowStore } from '../stores/usePhotoFlowStore';
 import { SUPPORTED_CURRENCIES } from '../utils/format';
 import { CustomSelect } from './ui/CustomSelect';
+import { PhotoFlowLogo } from './PhotoFlowLogo';
 
 export const EncryptionVaultGate: React.FC = () => {
   const user = usePhotoFlowStore((s) => s.user);
@@ -59,6 +60,7 @@ export const EncryptionVaultGate: React.FC = () => {
     <div className="min-h-screen bg-white text-black flex flex-col justify-center items-center px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-6">
+          <PhotoFlowLogo className="w-8 h-8 text-black mb-3.5" />
           <h1 className="text-xl font-semibold tracking-tight text-black">
             {isSetup ? 'Set up encryption' : 'Unlock workspace'}
           </h1>

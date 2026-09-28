@@ -30,6 +30,10 @@ import {
   wipeAllUserStorageObjects,
 } from '../lib/storage/storageRepository';
 import { AuthUser, getCurrentUser, signOutUser } from '../lib/supabase/authService';
+import {
+  SubscriptionRecord,
+  verifyAndLoadSubscription,
+} from '../lib/stripe/stripeService';
 import { computeProjectPaymentStatus } from '../utils/calculations';
 import { addDaysIso, generateUuid, todayIsoDate } from '../utils/format';
 
@@ -74,6 +78,9 @@ interface PhotoFlowStore {
   authLoading: boolean;
   user: AuthUser | null;
 
+  subscriptionStatus: 'checking' | 'required' | 'active';
+  subscriptionRecord: SubscriptionRecord | null;
+
   vaultStatus: 'checking' | 'needs_setup' | 'locked' | 'unlocked';
   dek: CryptoKey | null;
   keyBundle: WrappedKeyBundle | null;
@@ -104,6 +111,7 @@ interface PhotoFlowStore {
 
   initializeAuth: () => Promise<void>;
   setAuthenticatedUser: (user: AuthUser | null) => Promise<void>;
+  refreshSubscriptionStatus: () => Promise<void>;
   setupEncryptionVault: (
     passphrase: string,
     currency: CurrencyCode,
@@ -176,6 +184,9 @@ export const usePhotoFlowStore = create<PhotoFlowStore>((set, get) => ({
   authLoading: true,
   user: null,
 
+  subscriptionStatus: 'checking',
+  subscriptionRecord: null,
+
   vaultStatus: 'checking',
   dek: null,
   keyBundle: null,
@@ -242,6 +253,8 @@ export const usePhotoFlowStore = create<PhotoFlowStore>((set, get) => ({
       set({
         user: null,
         authLoading: false,
+        subscriptionStatus: 'checking',
+        subscriptionRecord: null,
         vaultStatus: 'checking',
         dek: null,
         keyBundle: null,
@@ -255,7 +268,31 @@ export const usePhotoFlowStore = create<PhotoFlowStore>((set, get) => ({
       return;
     }
 
-    set({ user, authLoading: false, vaultStatus: 'checking' });
+    set({
+      user,
+      authLoading: false,
+      subscriptionStatus: 'checking',
+      vaultStatus: 'checking',
+    });
+
+    try {
+      const subResult = await verifyAndLoadSubscription(user);
+      if (subResult.justCompletedCheckout) {
+        get().addToast('Subscription activated', 'Thank you for subscribing to PhotoFlow.', 'success');
+      } else if (subResult.checkoutCanceled) {
+        get().addToast('Checkout canceled', 'You can subscribe whenever you are ready.', 'default');
+      }
+
+      set({
+        subscriptionStatus: subResult.isSubscribed ? 'active' : 'required',
+        subscriptionRecord: subResult.record,
+      });
+    } catch {
+      set({
+        subscriptionStatus: 'required',
+        subscriptionRecord: null,
+      });
+    }
 
     try {
       const bundle = await loadWrappedKeyBundle(user.id);
@@ -270,6 +307,21 @@ export const usePhotoFlowStore = create<PhotoFlowStore>((set, get) => ({
         vaultStatus: 'needs_setup',
         syncError: err instanceof Error ? err.message : 'Failed to inspect encryption key bundle.',
       });
+    }
+  },
+
+  refreshSubscriptionStatus: async () => {
+    const { user } = get();
+    if (!user) return;
+    const subResult = await verifyAndLoadSubscription(user);
+    set({
+      subscriptionStatus: subResult.isSubscribed ? 'active' : 'required',
+      subscriptionRecord: subResult.record,
+    });
+    if (subResult.isSubscribed) {
+      get().addToast('Subscription verified', undefined, 'success');
+    } else {
+      get().addToast('No active subscription found yet', 'Complete Stripe checkout to unlock your workspace.', 'default');
     }
   },
 
@@ -364,6 +416,8 @@ export const usePhotoFlowStore = create<PhotoFlowStore>((set, get) => ({
     await signOutUser();
     set({
       user: null,
+      subscriptionStatus: 'checking',
+      subscriptionRecord: null,
       dek: null,
       keyBundle: null,
       vaultStatus: 'checking',

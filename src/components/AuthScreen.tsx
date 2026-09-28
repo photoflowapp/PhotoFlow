@@ -7,6 +7,7 @@ import {
   updateUserPassword,
 } from '../lib/supabase/authService';
 import { usePhotoFlowStore } from '../stores/usePhotoFlowStore';
+import { PhotoFlowLogo } from './PhotoFlowLogo';
 
 type AuthMode = 'signin' | 'signup' | 'forgot' | 'reset';
 
@@ -107,6 +108,7 @@ export const AuthScreen: React.FC = () => {
     <div className="min-h-screen bg-white text-black flex flex-col justify-center items-center px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="mb-8">
+          <PhotoFlowLogo className="w-9 h-9 text-black mb-4" />
           <h1 className="text-2xl font-semibold tracking-tight text-black">PhotoFlow</h1>
           <p className="text-sm text-neutral-500 mt-1">
             {mode === 'signin' && 'Sign in to your workspace'}
