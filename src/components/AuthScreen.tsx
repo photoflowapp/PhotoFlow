@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowLeft } from 'lucide-react';
 import {
   sendPasswordReset,
   signInWithEmail,
@@ -13,6 +13,7 @@ type AuthMode = 'signin' | 'signup' | 'forgot' | 'reset';
 
 export const AuthScreen: React.FC = () => {
   const setAuthenticatedUser = usePhotoFlowStore((s) => s.setAuthenticatedUser);
+  const setShowAuthPage = usePhotoFlowStore((s) => s.setShowAuthPage);
   const addToast = usePhotoFlowStore((s) => s.addToast);
 
   const [mode, setMode] = useState<AuthMode>('signin');
@@ -107,6 +108,15 @@ export const AuthScreen: React.FC = () => {
   return (
     <div className="min-h-screen bg-white text-black flex flex-col justify-center items-center px-4 py-12">
       <div className="w-full max-w-sm">
+        <button
+          type="button"
+          onClick={() => setShowAuthPage(false)}
+          className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-black mb-6 transition-colors cursor-pointer"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Back to home</span>
+        </button>
+
         <div className="mb-8">
           <PhotoFlowLogo className="w-9 h-9 text-black mb-4" />
           <h1 className="text-2xl font-semibold tracking-tight text-black">PhotoFlow</h1>

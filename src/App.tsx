@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
 import { usePhotoFlowStore } from './stores/usePhotoFlowStore';
 import { getSupabaseClient } from './lib/supabase/client';
 import { useOnlineStatus } from './hooks/useOnlineStatus';
+import { LandingPage } from './pages/LandingPage';
 import { AuthScreen } from './components/AuthScreen';
 import { SubscriptionGate } from './components/SubscriptionGate';
 import { EncryptionVaultGate } from './components/EncryptionVaultGate';
@@ -21,6 +22,7 @@ import { ToastContainer } from './components/ToastContainer';
 export default function App() {
   const authLoading = usePhotoFlowStore((s) => s.authLoading);
   const user = usePhotoFlowStore((s) => s.user);
+  const showAuthPage = usePhotoFlowStore((s) => s.showAuthPage);
   const subscriptionStatus = usePhotoFlowStore((s) => s.subscriptionStatus);
   const vaultStatus = usePhotoFlowStore((s) => s.vaultStatus);
   const currentPage = usePhotoFlowStore((s) => s.currentPage);
@@ -29,6 +31,7 @@ export default function App() {
   const loadAllDatasets = usePhotoFlowStore((s) => s.loadAllDatasets);
 
   const isOnline = useOnlineStatus();
+  const prevOnlineRef = useRef(isOnline);
 
   useEffect(() => {
     initializeAuth();
@@ -56,14 +59,19 @@ export default function App() {
   }, [initializeAuth, setAuthenticatedUser]);
 
   useEffect(() => {
-    if (isOnline && user && subscriptionStatus === 'active' && vaultStatus === 'unlocked') {
+    const cameBackOnline = !prevOnlineRef.current && isOnline;
+    prevOnlineRef.current = isOnline;
+
+    if (cameBackOnline && user && subscriptionStatus === 'active' && vaultStatus === 'unlocked') {
       loadAllDatasets();
     }
   }, [isOnline, user, subscriptionStatus, vaultStatus, loadAllDatasets]);
 
   if (
     authLoading ||
-    (user && (subscriptionStatus === 'checking' || (subscriptionStatus === 'active' && vaultStatus === 'checking')))
+    (user &&
+      (subscriptionStatus === 'checking' ||
+        (subscriptionStatus === 'active' && vaultStatus === 'checking')))
   ) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -73,6 +81,15 @@ export default function App() {
   }
 
   if (!user) {
+    if (!showAuthPage) {
+      return (
+        <>
+          <LandingPage />
+          <ToastContainer />
+        </>
+      );
+    }
+
     return (
       <>
         <AuthScreen />

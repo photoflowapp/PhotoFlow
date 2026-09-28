@@ -15,7 +15,7 @@ export const SubscriptionGate: React.FC = () => {
 
   const [plan, setPlan] = useState<StripePlanSummary>({
     name: 'PhotoFlow Studio',
-    amountFormatted: '$19',
+    amountFormatted: '8.99€',
     interval: 'month',
   });
   const [redirecting, setRedirecting] = useState(false);

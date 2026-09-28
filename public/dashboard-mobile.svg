@@ -1,0 +1,163 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 790" width="390" height="790" fill="none">
+  <style>
+    .font-ui { font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  </style>
+
+  <!-- Screen Background -->
+  <rect width="390" height="790" fill="#FFFFFF" />
+
+  <!-- Top Mobile Header Bar -->
+  <line x1="0" y1="68" x2="390" y2="68" stroke="#F3F3F3" stroke-width="1" />
+
+  <!-- Logo + PhotoFlow -->
+  <g transform="translate(13, 18) scale(0.024)">
+    <g fill="#0A0A0A">
+      <path d="M 186.00 389.85 A 44.00 44.00 0 0 1 241.39 347.35 L 429.63 397.79 A 18.00 18.00 0 0 1 437.70 427.91 L 233.80 631.81 A 28.00 28.00 0 0 1 186.00 612.01 Z" />
+      <path d="M 454.78 168.60 A 44.00 44.00 0 0 1 519.28 195.32 L 569.73 383.56 A 18.00 18.00 0 0 1 547.68 405.61 L 269.14 330.98 A 28.00 28.00 0 0 1 262.39 279.68 Z" />
+      <path d="M 780.78 290.75 A 44.00 44.00 0 0 1 789.90 359.97 L 652.09 497.77 A 18.00 18.00 0 0 1 621.98 489.70 L 547.34 211.17 A 28.00 28.00 0 0 1 588.39 179.67 Z" />
+      <path d="M 838.00 634.15 A 44.00 44.00 0 0 1 782.61 676.65 L 594.37 626.21 A 18.00 18.00 0 0 1 586.30 596.09 L 790.20 392.19 A 28.00 28.00 0 0 1 838.00 411.99 Z" />
+      <path d="M 569.22 855.40 A 44.00 44.00 0 0 1 504.72 828.68 L 454.27 640.44 A 18.00 18.00 0 0 1 476.32 618.39 L 754.86 693.02 A 28.00 28.00 0 0 1 761.61 744.32 Z" />
+      <path d="M 243.22 733.25 A 44.00 44.00 0 0 1 234.10 664.03 L 371.91 526.23 A 18.00 18.00 0 0 1 402.02 534.30 L 476.66 812.83 A 28.00 28.00 0 0 1 435.61 844.33 Z" />
+    </g>
+  </g>
+  <text x="45" y="36" class="font-ui" font-size="16.5" font-weight="600" fill="#0A0A0A">PhotoFlow</text>
+
+  <!-- Search Trigger -->
+  <g transform="translate(148, 22)" stroke="#737373" stroke-width="1.6" fill="none">
+    <circle cx="6.5" cy="6.5" r="5.5" />
+    <line x1="10.5" y1="10.5" x2="14.5" y2="14.5" stroke-linecap="round" />
+  </g>
+  <text x="172" y="35" class="font-ui" font-size="14" fill="#737373">Search...</text>
+
+  <!-- Hamburger Menu Icon -->
+  <g transform="translate(338, 22)" stroke="#0A0A0A" stroke-width="1.8" stroke-linecap="round">
+    <line x1="0" y1="2" x2="17" y2="2" />
+    <line x1="0" y1="8.5" x2="17" y2="8.5" />
+    <line x1="0" y1="15" x2="17" y2="15" />
+  </g>
+
+  <!-- Page Header: Home & Date -->
+  <text x="16" y="114" class="font-ui" font-size="22" font-weight="600" fill="#0A0A0A">Home</text>
+  <text x="282" y="113" class="font-ui" font-size="14" fill="#A3A3A3">Sep 28, 2026</text>
+
+  <!-- 2x2 Metrics Grid -->
+  <!-- Row 1 Left: Cleared revenue -->
+  <text x="16" y="192" class="font-ui" font-size="14" fill="#737373">Cleared revenue</text>
+  <g transform="translate(150, 174)" stroke="#0A0A0A" stroke-width="2" fill="none">
+    <rect x="1" y="4" width="22" height="17" rx="3" />
+    <path d="M17 12.5H23" stroke-linecap="round" />
+    <path d="M4 4V2.5C4 1.7 4.7 1 5.5 1H18" stroke-linecap="round" />
+  </g>
+  <text x="16" y="252" class="font-ui" font-size="34" font-weight="600" fill="#0A0A0A">13.750 €</text>
+
+  <!-- Row 1 Right: Outstanding -->
+  <text x="206" y="192" class="font-ui" font-size="14" fill="#737373">Outstanding</text>
+  <g transform="translate(339, 173)" stroke="#0A0A0A" stroke-width="2" fill="none">
+    <circle cx="12" cy="12" r="11" />
+    <path d="M12 6.5V12L15.5 14" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+  <text x="206" y="252" class="font-ui" font-size="34" font-weight="600" fill="#0A0A0A">4.200 €</text>
+
+  <!-- Row 2 Left: Upcoming shoots -->
+  <text x="16" y="314" class="font-ui" font-size="14" fill="#737373">Upcoming shoots</text>
+  <g transform="translate(150, 297)" stroke="#0A0A0A" stroke-width="2" fill="none">
+    <path d="M3 6H6L8 3H16L18 6H21C22.1 6 23 6.9 23 8V19C23 20.1 22.1 21 21 21H3C1.9 21 1 20.1 1 19V8C1 6.9 1.9 6 3 6Z" />
+    <circle cx="12" cy="13.5" r="4" />
+  </g>
+  <text x="16" y="374" class="font-ui" font-size="34" font-weight="600" fill="#0A0A0A">1</text>
+
+  <!-- Row 2 Right: In editing -->
+  <text x="206" y="314" class="font-ui" font-size="14" fill="#737373">In editing</text>
+  <g transform="translate(339, 296)" stroke="#0A0A0A" stroke-width="2" stroke-linecap="round">
+    <line x1="4" y1="3" x2="4" y2="21" />
+    <line x1="12" y1="3" x2="12" y2="21" />
+    <line x1="20" y1="3" x2="20" y2="21" />
+    <line x1="1" y1="8" x2="7" y2="8" />
+    <line x1="9" y1="15" x2="15" y2="15" />
+    <line x1="17" y1="10" x2="23" y2="10" />
+  </g>
+  <text x="206" y="374" class="font-ui" font-size="34" font-weight="600" fill="#0A0A0A">2</text>
+
+  <!-- Needs attention section -->
+  <g transform="translate(16, 428)">
+    <circle cx="13" cy="13" r="11.5" stroke="#0A0A0A" stroke-width="1.8" />
+    <line x1="13" y1="7.5" x2="13" y2="14" stroke="#0A0A0A" stroke-width="1.8" stroke-linecap="round" />
+    <circle cx="13" cy="18" r="1.1" fill="#0A0A0A" />
+    <text x="41" y="18" class="font-ui" font-size="16" font-weight="600" fill="#0A0A0A">Needs attention</text>
+    <path d="M175 9H182V16M182 9L174 17" stroke="#A3A3A3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    <text x="342" y="18" class="font-ui" font-size="14" font-weight="600" fill="#D97706">4</text>
+
+    <!-- Attention Row 1 -->
+    <g transform="translate(0, 52)">
+      <circle cx="5" cy="18" r="4.5" fill="#F59E0B" />
+      <text x="24" y="12" class="font-ui" font-size="15" font-weight="500" fill="#0A0A0A">Atelier Nord Monograph ...</text>
+      <text x="24" y="33" class="font-ui" font-size="13.5" fill="#A3A3A3">Gallery delivery</text>
+      <text x="245" y="23" class="font-ui" font-size="13.5" font-weight="500" fill="#D97706">Due Oct 1, 2026</text>
+    </g>
+
+    <!-- Attention Row 2 -->
+    <g transform="translate(0, 118)">
+      <circle cx="9.5" cy="15" r="8" stroke="#EF4444" stroke-width="1.6" />
+      <text x="34" y="20" class="font-ui" font-size="15" font-weight="500" fill="#0A0A0A">Send contract &amp; retain...</text>
+      <text x="236" y="20" class="font-ui" font-size="13.5" font-weight="500" fill="#DC2626">Due Sep 27, 2026</text>
+    </g>
+
+    <!-- Attention Row 3 -->
+    <g transform="translate(0, 174)">
+      <circle cx="9.5" cy="15" r="8" stroke="#EF4444" stroke-width="1.6" />
+      <text x="34" y="20" class="font-ui" font-size="15" font-weight="500" fill="#0A0A0A">Gear check &amp; broncolo...</text>
+      <text x="236" y="20" class="font-ui" font-size="13.5" font-weight="500" fill="#DC2626">Due Sep 27, 2026</text>
+    </g>
+
+    <!-- Attention Row 4 -->
+    <g transform="translate(0, 230)">
+      <circle cx="9.5" cy="15" r="8" stroke="#EF4444" stroke-width="1.6" />
+      <text x="34" y="20" class="font-ui" font-size="15" font-weight="500" fill="#0A0A0A">Send contract &amp; retaine...</text>
+      <text x="245" y="20" class="font-ui" font-size="13.5" font-weight="500" fill="#DC2626">Due Sep 5, 2026</text>
+    </g>
+  </g>
+
+  <!-- Bottom Navigation Bar -->
+  <rect x="0" y="718" width="390" height="72" fill="#FFFFFF" />
+  <line x1="0" y1="718" x2="390" y2="718" stroke="#ECECEC" stroke-width="1" />
+
+  <!-- Nav 1: Home (Active) -->
+  <g transform="translate(31, 731)" stroke="#0A0A0A" stroke-width="1.7" fill="none">
+    <rect x="1" y="1" width="6" height="6" rx="1" />
+    <rect x="10" y="1" width="6" height="6" rx="1" />
+    <rect x="1" y="10" width="6" height="6" rx="1" />
+    <rect x="10" y="10" width="6" height="6" rx="1" />
+  </g>
+  <text x="39.5" y="766" text-anchor="middle" class="font-ui" font-size="12" font-weight="500" fill="#0A0A0A">Home</text>
+
+  <!-- Nav 2: Pipeline -->
+  <g transform="translate(109, 731)" stroke="#A3A3A3" stroke-width="1.7" stroke-linecap="round">
+    <line x1="3" y1="2" x2="3" y2="14" />
+    <line x1="8.5" y1="2" x2="8.5" y2="10" />
+    <line x1="14" y1="2" x2="14" y2="16" />
+  </g>
+  <text x="117.5" y="766" text-anchor="middle" class="font-ui" font-size="12" fill="#A3A3A3">Pipeline</text>
+
+  <!-- Nav 3: Calendar -->
+  <g transform="translate(186, 731)" stroke="#A3A3A3" stroke-width="1.7" fill="none">
+    <rect x="1.5" y="3" width="14" height="13" rx="2" />
+    <line x1="1.5" y1="7" x2="15.5" y2="7" />
+    <line x1="5" y1="1" x2="5" y2="4" stroke-linecap="round" />
+    <line x1="12" y1="1" x2="12" y2="4" stroke-linecap="round" />
+  </g>
+  <text x="195" y="766" text-anchor="middle" class="font-ui" font-size="12" fill="#A3A3A3">Calendar</text>
+
+  <!-- Nav 4: Tasks -->
+  <g transform="translate(264, 731)" stroke="#A3A3A3" stroke-width="1.7" fill="none">
+    <rect x="1.5" y="1.5" width="14" height="14" rx="2" />
+    <path d="M5 8.5L7.5 11L12 6" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+  <text x="272.5" y="766" text-anchor="middle" class="font-ui" font-size="12" fill="#A3A3A3">Tasks</text>
+
+  <!-- Nav 5: Billing -->
+  <g transform="translate(342, 731)" stroke="#A3A3A3" stroke-width="1.7" fill="none">
+    <rect x="1" y="3" width="15" height="11" rx="2" />
+    <line x1="1" y1="7" x2="16" y2="7" />
+  </g>
+  <text x="350.5" y="766" text-anchor="middle" class="font-ui" font-size="12" fill="#A3A3A3">Billing</text>
+</svg>

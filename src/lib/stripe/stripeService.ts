@@ -249,8 +249,8 @@ async function resolveActivePriceId(secretKey: string, configuredId?: string): P
         return {
           priceId: recurringPrice.id,
           planName: 'PhotoFlow Studio',
-          unitAmount: recurringPrice.unit_amount ?? 1900,
-          currency: (recurringPrice.currency || 'usd').toUpperCase(),
+          unitAmount: recurringPrice.unit_amount ?? 899,
+          currency: (recurringPrice.currency || 'eur').toUpperCase(),
           interval: recurringPrice.recurring?.interval || 'month',
         };
       }
@@ -286,8 +286,8 @@ async function resolveActivePriceId(secretKey: string, configuredId?: string): P
     return {
       priceId: first.id,
       planName: prodName,
-      unitAmount: first.unit_amount ?? 1900,
-      currency: (first.currency || 'usd').toUpperCase(),
+      unitAmount: first.unit_amount ?? 899,
+      currency: (first.currency || 'eur').toUpperCase(),
       interval: first.recurring?.interval || 'month',
     };
   }
@@ -301,8 +301,8 @@ async function resolveActivePriceId(secretKey: string, configuredId?: string): P
   }>('/prices', secretKey, {
     method: 'POST',
     params: {
-      currency: 'usd',
-      unit_amount: '1900',
+      currency: 'eur',
+      unit_amount: '899',
       'recurring[interval]': 'month',
       'product_data[name]': 'PhotoFlow Studio Subscription',
     },
@@ -311,8 +311,8 @@ async function resolveActivePriceId(secretKey: string, configuredId?: string): P
   return {
     priceId: createdPrice.id,
     planName: 'PhotoFlow Studio',
-    unitAmount: createdPrice.unit_amount ?? 1900,
-    currency: (createdPrice.currency || 'usd').toUpperCase(),
+    unitAmount: createdPrice.unit_amount ?? 899,
+    currency: (createdPrice.currency || 'eur').toUpperCase(),
     interval: createdPrice.recurring?.interval || 'month',
   };
 }
@@ -340,7 +340,7 @@ export async function fetchStripePlanSummary(): Promise<StripePlanSummary> {
 
   return {
     name: 'PhotoFlow Studio',
-    amountFormatted: '$19',
+    amountFormatted: '8.99€',
     interval: 'month',
     priceId: priceId || undefined,
   };

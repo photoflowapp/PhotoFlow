@@ -18,6 +18,8 @@ export default defineConfig(() => {
           'PhotoFlowLogo.jpg',
           'PhotoFlowLogo.png',
           'PhotoFlowLogo.svg',
+          'dashboard-hero.svg',
+          'dashboard-mobile.svg',
         ],
         manifest: {
           id: './',

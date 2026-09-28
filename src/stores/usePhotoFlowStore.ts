@@ -77,6 +77,7 @@ export interface ProjectUpsertInput {
 interface PhotoFlowStore {
   authLoading: boolean;
   user: AuthUser | null;
+  showAuthPage: boolean;
 
   subscriptionStatus: 'checking' | 'required' | 'active';
   subscriptionRecord: SubscriptionRecord | null;
@@ -125,6 +126,7 @@ interface PhotoFlowStore {
   persistDataset: (dataset: DatasetKey) => Promise<void>;
 
   setCurrentPage: (page: AppPage) => void;
+  setShowAuthPage: (show: boolean) => void;
   setSelectedProjectId: (id: string | null) => void;
   openNewProjectWizard: () => void;
   openEditProjectWizard: (projectId: string) => void;
@@ -183,6 +185,7 @@ const saveTimers: Partial<Record<DatasetKey, ReturnType<typeof setTimeout>>> = {
 export const usePhotoFlowStore = create<PhotoFlowStore>((set, get) => ({
   authLoading: true,
   user: null,
+  showAuthPage: false,
 
   subscriptionStatus: 'checking',
   subscriptionRecord: null,
@@ -346,6 +349,71 @@ export const usePhotoFlowStore = create<PhotoFlowStore>((set, get) => ({
         onboardingCompleted: true,
       };
 
+      const initialPayloads: Record<DatasetKey, unknown> = {
+        clients: [],
+        projects: [],
+        tasks: [],
+        payments: [],
+        activities: [],
+        settings: initialSettings,
+      };
+
+      const allKeys: DatasetKey[] = [
+        'clients',
+        'projects',
+        'tasks',
+        'payments',
+        'activities',
+        'settings',
+      ];
+
+      const updatedVersions: DatasetVersions = {
+        clients: 1,
+        projects: 1,
+        tasks: 1,
+        payments: 1,
+        activities: 1,
+        settings: 1,
+      };
+
+      let lastEnvelope: EncryptionEnvelope | null = null;
+      let syncedTime = new Date().toISOString();
+
+      for (const k of allKeys) {
+        const res = await saveEncryptedDataset(
+          user.id,
+          k,
+          initialPayloads[k],
+          1,
+          dek
+        );
+        updatedVersions[k] = res.version;
+        lastEnvelope = res.envelopeSample;
+        syncedTime = res.updatedAt;
+      }
+
+      const manifestDatasets = allKeys.reduce(
+        (acc, key) => {
+          acc[key] = {
+            version: updatedVersions[key],
+            updatedAt: syncedTime,
+            objectPath: `${user.id}/${key}.enc`,
+          };
+          return acc;
+        },
+        {} as Record<DatasetKey, { version: number; updatedAt: string; objectPath: string }>
+      );
+
+      await saveManifest(
+        user.id,
+        {
+          version: 1,
+          updatedAt: syncedTime,
+          datasets: manifestDatasets,
+        },
+        dek
+      );
+
       set({
         dek,
         keyBundle: bundle,
@@ -356,24 +424,11 @@ export const usePhotoFlowStore = create<PhotoFlowStore>((set, get) => ({
         payments: [],
         activities: [],
         settings: initialSettings,
-      });
-
-      const allKeys: DatasetKey[] = [
-        'clients',
-        'projects',
-        'tasks',
-        'payments',
-        'activities',
-        'settings',
-      ];
-      for (const k of allKeys) {
-        await get().persistDataset(k);
-      }
-
-      set({
+        versions: updatedVersions,
+        lastSampleEnvelope: lastEnvelope,
         dataLoading: false,
         syncStatus: 'saved',
-        lastSyncedAt: new Date().toISOString(),
+        lastSyncedAt: syncedTime,
       });
     } catch (err) {
       set({
@@ -416,6 +471,7 @@ export const usePhotoFlowStore = create<PhotoFlowStore>((set, get) => ({
     await signOutUser();
     set({
       user: null,
+      showAuthPage: false,
       subscriptionStatus: 'checking',
       subscriptionRecord: null,
       dek: null,
@@ -566,6 +622,7 @@ export const usePhotoFlowStore = create<PhotoFlowStore>((set, get) => ({
   },
 
   setCurrentPage: (page) => set({ currentPage: page }),
+  setShowAuthPage: (show) => set({ showAuthPage: show }),
   setSelectedProjectId: (id) => set({ selectedProjectId: id }),
   openNewProjectWizard: () => set({ editingProjectId: null, isProjectWizardOpen: true }),
   openEditProjectWizard: (projectId) =>
