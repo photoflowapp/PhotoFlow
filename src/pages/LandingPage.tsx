@@ -215,7 +215,7 @@ export const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white text-black selection:bg-black selection:text-white">
       {/* Top Bar — Strict 3-Zone Contract */}
-      <header className="sticky top-0 z-40 h-16 bg-white/90 backdrop-blur-md border-b border-neutral-200/70 px-5 sm:px-8 lg:px-12 flex items-center justify-between">
+      <header className="animate-landing-topbar sticky top-0 z-40 h-16 bg-white/90 backdrop-blur-md border-b border-neutral-200/70 px-5 sm:px-8 lg:px-12 flex items-center justify-between">
         {/* Zone 1: Brand Logo + Wordmark (Refreshes the page on click) */}
         <button
           type="button"
@@ -285,21 +285,24 @@ export const LandingPage: React.FC = () => {
       <section className="pt-16 sm:pt-24 pb-20 sm:pb-28 px-5 sm:px-8 lg:px-12 max-w-7xl mx-auto overflow-hidden">
         <div className="max-w-3xl mx-auto text-center">
           <h1
-            className="text-4xl sm:text-5xl lg:text-[60px] font-semibold tracking-[-0.03em] text-black leading-[1.06]"
-            style={{ textWrap: 'balance' }}
+            className="animate-landing-hero-item text-4xl sm:text-5xl lg:text-[60px] font-semibold tracking-[-0.03em] text-black leading-[1.06]"
+            style={{ textWrap: 'balance', animationDelay: '70ms' }}
           >
             The private operating system for photography studios.
           </h1>
 
           <p
-            className="mt-6 text-base sm:text-lg text-neutral-600 leading-relaxed max-w-2xl mx-auto font-normal"
-            style={{ textWrap: 'balance' }}
+            className="animate-landing-hero-item mt-6 text-base sm:text-lg text-neutral-600 leading-relaxed max-w-2xl mx-auto font-normal"
+            style={{ textWrap: 'balance', animationDelay: '150ms' }}
           >
             Manage client shoots, production pipelines, editing deadlines, and studio billing in one
             quiet workspace—protected end-to-end by client-side AES-256 encryption.
           </p>
 
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
+          <div
+            className="animate-landing-hero-item mt-9 flex flex-wrap items-center justify-center gap-4"
+            style={{ animationDelay: '230ms' }}
+          >
             <button
               type="button"
               onClick={handleOpenAuth}
@@ -317,7 +320,10 @@ export const LandingPage: React.FC = () => {
             </button>
           </div>
 
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-xs text-neutral-400">
+          <div
+            className="animate-landing-hero-item mt-5 flex flex-wrap items-center justify-center gap-2 text-xs text-neutral-400"
+            style={{ animationDelay: '300ms' }}
+          >
             <span>Client-side AES-256 encryption</span>
             <span aria-hidden="true">·</span>
             <span>Cross-device cloud sync</span>
@@ -326,7 +332,7 @@ export const LandingPage: React.FC = () => {
           </div>
         </div>
 
-        {/* 3D Scroll-Tilted Dashboard + iPhone Showcase with Long Bottom-to-Top White Gradient Fade */}
+        {/* 3D Scroll-Tilted Dashboard + iPhone Showcase */}
         <div
           ref={heroVisualRef}
           className="relative mt-12 sm:mt-16 mx-auto max-w-6xl"
@@ -346,8 +352,9 @@ export const LandingPage: React.FC = () => {
           >
             {/* Desktop Dashboard Frame */}
             <div
-              className="relative z-10 rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden border border-neutral-200/90 bg-white"
+              className="animate-landing-hero-desktop relative z-10 rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden border border-neutral-200/90 bg-white"
               style={{
+                animationDelay: '240ms',
                 boxShadow: `0 ${Math.round(30 - eased * 14)}px ${Math.round(
                   60 - eased * 25
                 )}px -15px rgba(0, 0, 0, ${(0.14 - eased * 0.05).toFixed(3)})`,
@@ -375,7 +382,10 @@ export const LandingPage: React.FC = () => {
             </div>
 
             {/* iPhone View in the Right Corner — Tilted the Exact Same Way as the Computer Image (No Vertical Axis Tilt) */}
-            <div className="absolute right-1.5 sm:right-5 lg:right-8 bottom-0 z-20 w-[21%] sm:w-[23%] max-w-[255px]">
+            <div
+              className="animate-landing-hero-phone absolute right-1.5 sm:right-5 lg:right-8 bottom-0 z-20 w-[21%] sm:w-[23%] max-w-[255px]"
+              style={{ animationDelay: '390ms' }}
+            >
               <IPhoneFrameMockup variant="hero" className="w-full" />
             </div>
           </div>

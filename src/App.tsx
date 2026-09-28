@@ -39,7 +39,7 @@ export default function App() {
     const supabase = getSupabaseClient();
     if (!supabase) return;
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         const currentUser = usePhotoFlowStore.getState().user;
         if (!currentUser || currentUser.id !== session.user.id) {
@@ -48,7 +48,7 @@ export default function App() {
             email: session.user.email || '',
           });
         }
-      } else {
+      } else if (event === 'SIGNED_OUT') {
         setAuthenticatedUser(null);
       }
     });

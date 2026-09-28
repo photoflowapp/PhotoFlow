@@ -79,12 +79,30 @@ function getLocalSubKey(userId: string): string {
   return `photoflow_sub_${userId}`;
 }
 
-async function saveSubscriptionRecord(userId: string, record: SubscriptionRecord): Promise<void> {
+export function getCachedSubscriptionRecord(userId: string): SubscriptionRecord | null {
+  if (!userId) return null;
+  try {
+    const raw = localStorage.getItem(getLocalSubKey(userId));
+    if (raw) {
+      return JSON.parse(raw) as SubscriptionRecord;
+    }
+  } catch {
+    // Ignore storage read errors
+  }
+  return null;
+}
+
+export function cacheSubscriptionRecordLocally(userId: string, record: SubscriptionRecord): void {
+  if (!userId) return;
   try {
     localStorage.setItem(getLocalSubKey(userId), JSON.stringify(record));
   } catch {
     // Ignore storage quota errors
   }
+}
+
+async function saveSubscriptionRecord(userId: string, record: SubscriptionRecord): Promise<void> {
+  cacheSubscriptionRecordLocally(userId, record);
 
   const supabase = getSupabaseClient();
   if (!supabase) return;
@@ -122,6 +140,7 @@ async function loadStoredSubscriptionRecord(userId: string): Promise<Subscriptio
         | SubscriptionRecord
         | undefined;
       if (metaSub && (metaSub.status === 'active' || metaSub.status === 'trialing')) {
+        cacheSubscriptionRecordLocally(userId, metaSub);
         return metaSub;
       }
     } catch {
@@ -135,6 +154,7 @@ async function loadStoredSubscriptionRecord(userId: string): Promise<Subscriptio
       if (!error && data) {
         const parsed = JSON.parse(await data.text()) as SubscriptionRecord;
         if (parsed && parsed.status) {
+          cacheSubscriptionRecordLocally(userId, parsed);
           return parsed;
         }
       }
@@ -143,16 +163,7 @@ async function loadStoredSubscriptionRecord(userId: string): Promise<Subscriptio
     }
   }
 
-  try {
-    const raw = localStorage.getItem(getLocalSubKey(userId));
-    if (raw) {
-      return JSON.parse(raw) as SubscriptionRecord;
-    }
-  } catch {
-    // Ignore
-  }
-
-  return null;
+  return getCachedSubscriptionRecord(userId);
 }
 
 async function stripeApiRequest<T>(

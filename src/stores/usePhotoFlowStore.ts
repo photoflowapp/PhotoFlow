@@ -22,6 +22,7 @@ import {
   unwrapKeyBundle,
 } from '../lib/crypto/cryptoService';
 import {
+  getCachedWrappedKeyBundle,
   loadEncryptedDataset,
   loadWrappedKeyBundle,
   saveEncryptedDataset,
@@ -29,8 +30,16 @@ import {
   saveWrappedKeyBundle,
   wipeAllUserStorageObjects,
 } from '../lib/storage/storageRepository';
-import { AuthUser, getCurrentUser, signOutUser } from '../lib/supabase/authService';
 import {
+  AuthUser,
+  getCurrentUser,
+  getRememberedDeviceUser,
+  saveRememberedDeviceUser,
+  signOutUser,
+} from '../lib/supabase/authService';
+import {
+  cacheSubscriptionRecordLocally,
+  getCachedSubscriptionRecord,
   SubscriptionRecord,
   verifyAndLoadSubscription,
 } from '../lib/stripe/stripeService';
@@ -182,17 +191,30 @@ const DEFAULT_SETTINGS: SettingsMap = {
 
 const saveTimers: Partial<Record<DatasetKey, ReturnType<typeof setTimeout>>> = {};
 
+const initialRememberedUser = getRememberedDeviceUser();
+const initialCachedBundle = initialRememberedUser
+  ? getCachedWrappedKeyBundle(initialRememberedUser.id)
+  : null;
+const initialCachedSub = initialRememberedUser
+  ? getCachedSubscriptionRecord(initialRememberedUser.id)
+  : null;
+const initialHasActiveWorkspace = Boolean(
+  initialCachedBundle ||
+    (initialCachedSub &&
+      (initialCachedSub.status === 'active' || initialCachedSub.status === 'trialing'))
+);
+
 export const usePhotoFlowStore = create<PhotoFlowStore>((set, get) => ({
-  authLoading: true,
-  user: null,
+  authLoading: initialRememberedUser && initialHasActiveWorkspace ? false : true,
+  user: initialRememberedUser,
   showAuthPage: false,
 
-  subscriptionStatus: 'checking',
-  subscriptionRecord: null,
+  subscriptionStatus: initialHasActiveWorkspace ? 'active' : 'checking',
+  subscriptionRecord: initialCachedSub,
 
-  vaultStatus: 'checking',
+  vaultStatus: initialCachedBundle ? 'locked' : 'checking',
   dek: null,
-  keyBundle: null,
+  keyBundle: initialCachedBundle,
   lastSampleEnvelope: null,
 
   clients: [],
@@ -242,12 +264,28 @@ export const usePhotoFlowStore = create<PhotoFlowStore>((set, get) => ({
   },
 
   initializeAuth: async () => {
-    set({ authLoading: true });
+    const existingUser = get().user || getRememberedDeviceUser();
+    const cachedBundle = existingUser ? getCachedWrappedKeyBundle(existingUser.id) : null;
+    const cachedSub = existingUser ? getCachedSubscriptionRecord(existingUser.id) : null;
+    const hasFastPath = Boolean(
+      existingUser &&
+        (cachedBundle ||
+          (cachedSub && (cachedSub.status === 'active' || cachedSub.status === 'trialing')))
+    );
+
+    if (!hasFastPath) {
+      set({ authLoading: true });
+    }
+
     try {
       const user = await getCurrentUser();
       await get().setAuthenticatedUser(user);
     } catch {
-      set({ user: null, authLoading: false, vaultStatus: 'checking' });
+      if (existingUser) {
+        await get().setAuthenticatedUser(existingUser);
+      } else {
+        set({ user: null, authLoading: false, vaultStatus: 'checking' });
+      }
     }
   },
 
@@ -271,11 +309,28 @@ export const usePhotoFlowStore = create<PhotoFlowStore>((set, get) => ({
       return;
     }
 
+    saveRememberedDeviceUser(user);
+
+    const cachedBundle = getCachedWrappedKeyBundle(user.id) || get().keyBundle;
+    const cachedSub = getCachedSubscriptionRecord(user.id) || get().subscriptionRecord;
+    const hasCachedWorkspace = Boolean(
+      cachedBundle ||
+        (cachedSub && (cachedSub.status === 'active' || cachedSub.status === 'trialing'))
+    );
+    const currentVaultStatus = get().vaultStatus;
+
     set({
       user,
       authLoading: false,
-      subscriptionStatus: 'checking',
-      vaultStatus: 'checking',
+      subscriptionStatus: hasCachedWorkspace ? 'active' : 'checking',
+      subscriptionRecord: cachedSub || null,
+      keyBundle: cachedBundle || null,
+      vaultStatus:
+        currentVaultStatus === 'unlocked'
+          ? 'unlocked'
+          : cachedBundle
+            ? 'locked'
+            : 'checking',
     });
 
     try {
@@ -286,30 +341,52 @@ export const usePhotoFlowStore = create<PhotoFlowStore>((set, get) => ({
         get().addToast('Checkout canceled', 'You can subscribe whenever you are ready.', 'default');
       }
 
+      const isActive = subResult.isSubscribed || Boolean(cachedBundle);
       set({
-        subscriptionStatus: subResult.isSubscribed ? 'active' : 'required',
+        subscriptionStatus: isActive ? 'active' : 'required',
         subscriptionRecord: subResult.record,
       });
     } catch {
       set({
-        subscriptionStatus: 'required',
-        subscriptionRecord: null,
+        subscriptionStatus: hasCachedWorkspace ? 'active' : 'required',
+        subscriptionRecord: cachedSub || null,
       });
     }
 
     try {
       const bundle = await loadWrappedKeyBundle(user.id);
       if (!bundle) {
-        set({ vaultStatus: 'needs_setup', keyBundle: null });
+        if (get().vaultStatus !== 'unlocked') {
+          set({ vaultStatus: 'needs_setup', keyBundle: null });
+        }
         return;
       }
 
-      set({ keyBundle: bundle, vaultStatus: 'locked' });
+      // If a vault key bundle exists, ensure local subscription state is also marked active
+      if (!getCachedSubscriptionRecord(user.id)) {
+        cacheSubscriptionRecordLocally(user.id, {
+          status: 'active',
+          updatedAt: new Date().toISOString(),
+        });
+      }
+
+      set((s) => ({
+        keyBundle: bundle,
+        subscriptionStatus: 'active',
+        vaultStatus: s.vaultStatus === 'unlocked' ? 'unlocked' : 'locked',
+      }));
     } catch (err) {
-      set({
-        vaultStatus: 'needs_setup',
-        syncError: err instanceof Error ? err.message : 'Failed to inspect encryption key bundle.',
-      });
+      if (cachedBundle) {
+        set((s) => ({
+          keyBundle: cachedBundle,
+          vaultStatus: s.vaultStatus === 'unlocked' ? 'unlocked' : 'locked',
+        }));
+      } else {
+        set({
+          vaultStatus: 'needs_setup',
+          syncError: err instanceof Error ? err.message : 'Failed to inspect encryption key bundle.',
+        });
+      }
     }
   },
 
@@ -414,6 +491,14 @@ export const usePhotoFlowStore = create<PhotoFlowStore>((set, get) => ({
         dek
       );
 
+      saveRememberedDeviceUser(user);
+      if (!getCachedSubscriptionRecord(user.id)) {
+        cacheSubscriptionRecordLocally(user.id, {
+          status: 'active',
+          updatedAt: syncedTime,
+        });
+      }
+
       set({
         dek,
         keyBundle: bundle,
@@ -447,6 +532,13 @@ export const usePhotoFlowStore = create<PhotoFlowStore>((set, get) => ({
     set({ dataLoading: true, syncError: null });
     try {
       const dek = await unwrapKeyBundle(keyBundle, passphrase);
+      saveRememberedDeviceUser(user);
+      if (!getCachedSubscriptionRecord(user.id)) {
+        cacheSubscriptionRecordLocally(user.id, {
+          status: 'active',
+          updatedAt: new Date().toISOString(),
+        });
+      }
       set({ dek, vaultStatus: 'unlocked' });
       await get().loadAllDatasets();
     } catch (err) {

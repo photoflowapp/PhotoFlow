@@ -38,6 +38,78 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Smooth entrance animations for Landing Page top bar, hero copy, and showcase images */
+@keyframes landingTopBarIn {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -16px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes landingHeroItemIn {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes landingHeroDesktopIn {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 44px, 0) scale(0.965);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes landingHeroPhoneIn {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 54px, 0) scale(0.93);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.animate-landing-topbar {
+  animation: landingTopBarIn 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-landing-hero-item {
+  animation: landingHeroItemIn 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-landing-hero-desktop {
+  animation: landingHeroDesktopIn 1.05s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-landing-hero-phone {
+  animation: landingHeroPhoneIn 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-landing-topbar,
+  .animate-landing-hero-item,
+  .animate-landing-hero-desktop,
+  .animate-landing-hero-phone {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 /* Subtle Notion-style scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
